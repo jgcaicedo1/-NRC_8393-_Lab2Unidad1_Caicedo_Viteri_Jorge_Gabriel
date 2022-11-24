@@ -10,14 +10,20 @@
                    2022-2023
 
 """
-#Librerias de nuestro laboratorio
+'''Libreria que ofrece herramientas para la manipulación y análisis de datos, 
+como tablas númericas y series temporales'''
 import pandas as pd
+'''Libreria de generación aleatoria de UUID a partir de 32 digitos
+hexadecimales'''
 import uuid
+'''Modulo para generación de números aleatorios'''
 import random
+'''Libreria que genera datos falsos como Nombres,Apellidos,Direcciones,etc'''
 from faker import Faker
+'''Modulo para manipular fechas y horas'''
 import datetime
 
-#Total de registros a generar
+'''Total de registros a generar'''
 num_usuarios = 5000
 """
 Definicion de los atributos de la entidad Estudiante
@@ -34,7 +40,7 @@ Foto(foto)=Una foto del estudiante que lo ayudara para ingresar en el sistema.
 
 """
 
-caracteristicas = [
+CaracteristicasEstudiante = [
     "id" ,
     "nombre" ,
     "apellido" ,
@@ -45,8 +51,10 @@ caracteristicas = [
     "email" ,
     "foto"
     ]
+
+
 #Elaboración del dataframe
-df = pd.DataFrame(columns=caracteristicas)
+df = pd.DataFrame(columns=CaracteristicasEstudiante)
 #Generacion aleatoria del id del estudiante
 df['id'] = [uuid.uuid4().hex for i in range(num_usuarios)]
 
@@ -287,7 +295,7 @@ Fecha de Nacimiento(fecha_de_nacimiento)=La fecha de nacimiento del docente.
 Email(email)=Un email del docente que servira para ingresar al sistema.
 
 """
-caracteristicas = [
+CaracteristicasDocente = [
     "id" ,
     "nombre" ,
     "apellido" ,
@@ -298,7 +306,7 @@ caracteristicas = [
     "email"
     ]
 #Elaboración del dataframe
-df = pd.DataFrame(columns=caracteristicas)
+df = pd.DataFrame(columns=CaracteristicasDocente)
 
 #Generacion aleatoria de los ids de los Docentes
 df['id'] = [uuid.uuid4().hex for i in range(num_usuarios)]
@@ -377,18 +385,20 @@ df.to_csv('Docentes.csv')
 Definicion de los atributos de la entidad Materia
 
 ID(id)=El id de la materia que sera unico para cada una
-Materia(Materia)=El nombre de la materia generado aleatoriamente.
+Materia(Nombre_Materia)=El nombre de la materia generado aleatoriamente.
 Descripcion(Descripcion)=Descripcion de la materia generado aleatoriamente.
 Estado(Status)=El estado en el que se encuentra la materia como activo o inactivo.
-Periodo Academico(Periodo)=El periodo academico de la materia.
+Horario(Horario)= Horas en las cuales se va a recibir dicha materia.
+Fecha de materia(Fecha_Materia)= Fecha cuando se realiza la materia.
 
 """
 caracteristicas = [
     "id" ,
-    "Materia" ,
+    "Nombre_Materia" ,
     "Descripcion" ,
     "Status" ,
-    "Periodo"
+    "Horario",
+    "Fecha_Materia"
     ]
 #Generacion del dataframe
 df = pd.DataFrame(columns=caracteristicas)
@@ -396,67 +406,50 @@ df = pd.DataFrame(columns=caracteristicas)
 df['id'] = [uuid.uuid4().hex for i in range(num_usuarios)]
 #Generacion aleatoria de las materias
 materias = ["Educación SocioEmocional","Exploración y Comprensión del mundo natural y social","Lenguaje y Comunicación","Artes","Pensamiento Matemáico","Educación Fisica"]
-df['Materia'] = random.choices(
+df['Nombre_Materia'] = random.choices(
     materias,
     weights=(17,16,16,16,16,16),
     k=num_usuarios
     )
 #Generacion aleatoria de la descripcion de la materia
-df['Descripcion'] = [faker.sentence() for i in df['Materia']]
-#Generacion aleatoria del periodo de la materia
-periodos =["Periodo 2022-2023","Periodo 2021-2022","Periodo 2020-2021","Periodo 2019-2020","Periodo 2018-2019","Periodo 2017-2018","Periodo 2016-2017","Periodo 2015-2026","Periodo 2014-2015","Periodo 2013-2014","Periodo 2012-2013","Periodo 2011-2012","Periodo 2010-2011","Periodo 2009-2010","Periodo 2008-2009","Periodo 2007-2008","Periodo 2006-2007","Periodo 2005-2006","Periodo 2004-2005","Periodo 2003-2004","Periodo 2002-2003","Periodo 2001-2002","Periodo 2000-2001","Periodo 1999-2000"]
-df['Periodo'] = random.choices(
-    periodos,
+df['Descripcion'] = [faker.sentence() for i in df['Nombre_Materia']]
+#Generacion del estado de la materia
+status = ["Activo","Inactivo"]
+df['Status'] = random.choices(
+    status,
     k=num_usuarios
     )
-def status_gen(Periodo):
-    """
-    Funcion para devolver el estado en base del periodo.
-
-    Parametros
-    ----------
-
-        Periodo : str
-            
-            Variable tipo String del periodo que espera  la función.
-
-
-    Retorna
-    -------
-
-        Retornara el estado de acuerdo a si se esta cursando el Periodo academico actual.
-
-    """
-    if Periodo=='Periodo 2022-2023':
-        return "Activo"
-    else:
-        return "Inactivo"
-
-#Generacion del estado de la materia
-df['Status'] = [status_gen(i) for i in df['Periodo']]
+#Generacion de los horarios de la materia
+horario = ["7:15-8:15","8:15-9:15","9:15-10:15","11:00-12:00"]
+df['Horario'] = random.choices(
+    horario,
+    k=num_usuarios
+    )
+#Generacion aleatoria de las fechas de registro
+df['Fecha_Materia'] = random_dob("2022-08-20","2022-06-01",num_usuarios)
 #Generacion del archivo Materias.csv donde se guardaran los datos
 df.to_csv('Materias.csv')
 """
 Definicion de los atributos de la entidad Aula
 
 ID(id)=El id del aula que sera unico para cada una
-Aula(Aula)=El numero del aula generado aleatoriamente en base al bloque.
+Aula(Numero_Aula)=El numero del aula generado aleatoriamente en base al bloque.
 Bloque(Bloque)=El bloque del aula generado aleatoriamente.
 Descripcion(Descripcion)=Descripcion del aula generado aleatoriamente.
 Estado(Status)=El estado en el que se encuentra el aula como activo o inactivo.
-Periodo Academico(Periodo)=El periodo academico donde se esta utilizando el aula.
+Fecha de registro(Fecha_Registro)= Fecha cuando se realizo el registro.
 
 """
-caracteristicas = [
+CaracteristicasAula = [
     "id" ,
-    "Aula" ,
+    "Numero_Aula" ,
     "Bloque",
     "Descripcion" ,
-    "Status" ,
-    "Periodo"
+    "Status",
+    "Fecha_Registro"
     ]
 #Generacion del dataframe
-df = pd.DataFrame(columns=caracteristicas)
+df = pd.DataFrame(columns=CaracteristicasAula)
 #Generacion aleatoria de las ids de las aulas
 df['id'] = [uuid.uuid4().hex for i in range(num_usuarios)]
 #Generacion aleatoria del bloque de las aulas
@@ -502,16 +495,16 @@ def aula_gen(bloque):
     elif bloque=='Salon Interactivo':
         return "Salon Interactivo"
 #Generacion del numero del aula
-df['Aula'] = [aula_gen(i) for i in df['Bloque']]
+df['Numero_Aula'] = [aula_gen(i) for i in df['Bloque']]
 #Generacion aleatoria de la descripcion del aula
 df['Descripcion'] = [faker.sentence() for i in df['Bloque']]
-#Generacion aleatoria del periodo academico del aula
-periodos =["Periodo 2022-2023","Periodo 2021-2022","Periodo 2020-2021","Periodo 2019-2020","Periodo 2018-2019","Periodo 2017-2018","Periodo 2016-2017","Periodo 2015-2026","Periodo 2014-2015","Periodo 2013-2014","Periodo 2012-2013","Periodo 2011-2012","Periodo 2010-2011","Periodo 2009-2010","Periodo 2008-2009","Periodo 2007-2008","Periodo 2006-2007","Periodo 2005-2006","Periodo 2004-2005","Periodo 2003-2004","Periodo 2002-2003","Periodo 2001-2002","Periodo 2000-2001","Periodo 1999-2000"]
-df['Periodo'] = random.choices(
-    periodos,
+#Generacion del estado del aula de acuerdo al periodo
+status = ["Activo","Inactivo"]
+df['Status'] = random.choices(
+    status,
     k=num_usuarios
     )
-#Generacion del estado del aula de acuerdo al periodo
-df['Status'] = [status_gen(i) for i in df['Periodo']]
+#Generacion aleatoria de las fechas de registro de las aulas
+df['Fecha_Registro'] = random_dob("2000-01-01","2022-11-15",num_usuarios)
 #Generacion del archivo Aulas.csv donde se guardaran los datos
 df.to_csv('Aulas.csv')
